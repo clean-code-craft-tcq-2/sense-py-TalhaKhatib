@@ -23,13 +23,18 @@ class StatsTest(unittest.TestCase):
         self.assertFalse(isnan(computedStats["min"] == nan))
 
     def test_raise_alerts_when_max_above_threshold(self):
-        emailAlert = EmailAlert()
-        ledAlert = LEDAlert()
+        # To check the max value and raise alerts
+        # Values are returned in dictionary from StatsAlerter function to have proper reference to max values
+        emailAlert = statistics.EmailAlert()  # Functions to raise alert, by default are set to True
+        ledAlert = statistics.LEDAlert()  # Functions to raise alert, by default are set to True
         maxThreshold = 10.5
-        statsAlerter = StatsAlerter(maxThreshold, [emailAlert, ledAlert])
-        statsAlerter.checkAndAlert([22.6, 12.5, 3.7])
-        self.assertTrue(emailAlert.emailSent)
-        self.assertTrue(ledAlert.ledGlows)
+        statsAlerter = statistics.StatsAlerter([22.6, 12.5, 3.7], maxThreshold, [emailAlert, ledAlert])
+        self.assertTrue(statsAlerter[22.6]["emailAlert"])
+        self.assertTrue(statsAlerter[22.6]["ledAlert"])
+        self.assertTrue(statsAlerter[12.5]["emailAlert"])
+        self.assertTrue(statsAlerter[12.5]["ledAlert"])
+        self.assertFalse(statsAlerter[3.7]["emailAlert"])
+        self.assertFalse(statsAlerter[3.7]["ledAlert"])
 
 
 if __name__ == "__main__":
